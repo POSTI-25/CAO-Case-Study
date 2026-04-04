@@ -1,19 +1,33 @@
 import './App.css';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import CategorySelection from './components/CategorySelection';
 import Feed from './components/Feed';
 import ModeToggleBar from './components/ModeToggleBar';
 import PopupModal from './components/PopupModal';
 import InstaWrappedModal from './components/InstaWrappedModal';
 import MessagesPanel from './components/MessagesPanel';
+import BottomNav from './components/BottomNav';
+import ReelsView from './components/ReelsView';
 import { CATEGORIES, postsData } from './data/postsData';
+
+const shufflePosts = (posts) => {
+  const nextPosts = [...posts];
+
+  for (let index = nextPosts.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [nextPosts[index], nextPosts[randomIndex]] = [nextPosts[randomIndex], nextPosts[index]];
+  }
+
+  return nextPosts;
+};
 
 function App() {
   const [activeScreen, setActiveScreen] = useState('categories');
+  const [activeTab, setActiveTab] = useState('home');
+  const [sessionPosts, setSessionPosts] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [showBreakModal, setShowBreakModal] = useState(false);
   const [showWrappedModal, setShowWrappedModal] = useState(false);
-  const [showMessages, setShowMessages] = useState(false);
   const [modes, setModes] = useState({
     ghostMode: false,
     parentalMode: false,
@@ -40,7 +54,8 @@ function App() {
   const handleStartFeed = () => {
     if (selectedCategories.length > 0) {
       setActiveScreen('feed');
-      setShowMessages(false);
+      setActiveTab('home');
+      setSessionPosts(shufflePosts(postsData));
     }
   };
 
@@ -54,8 +69,57 @@ function App() {
   const handleBreakExit = () => {
     setShowBreakModal(false);
     setActiveScreen('categories');
+    setActiveTab('home');
     setSelectedCategories([]);
-    setShowMessages(false);
+  };
+
+  const postPool = useMemo(
+    () => (sessionPosts.length > 0 ? sessionPosts : postsData),
+    [sessionPosts]
+  );
+
+  const isFeedExperience = activeScreen === 'feed';
+
+  const renderFeedTab = () => {
+    if (activeTab === 'reels') {
+      return <ReelsView posts={postPool} />;
+    }
+
+    if (activeTab === 'messages') {
+      return <MessagesPanel />;
+    }
+
+    if (activeTab === 'search') {
+      return (
+        <section className="placeholder-panel" aria-label="Search placeholder">
+          <h2>Search</h2>
+          <p>Explore creators, topics, and mindful content suggestions.</p>
+        </section>
+      );
+    }
+
+    if (activeTab === 'profile') {
+      return (
+        <section className="placeholder-panel" aria-label="Profile placeholder">
+          <h2>Your Profile</h2>
+          <p>Posts, saved moments, and mindful activity will appear here.</p>
+        </section>
+      );
+    }
+
+    return (
+      <>
+        <ModeToggleBar modes={modes} onToggleMode={handleModeToggle} />
+        <Feed
+          posts={postPool}
+          selectedCategories={selectedCategories}
+          modes={modes}
+          onBreakTrigger={() => setShowBreakModal(true)}
+          onOpenWrapped={() => setShowWrappedModal(true)}
+          onStatsUpdate={setWrappedStats}
+        />
+      </>
+    );
   };
 
   return (
@@ -63,30 +127,46 @@ function App() {
       <div className="phone-frame">
         <div className="phone-notch" />
         <div className="phone-screen">
-          <div className="app-top-branding">
-            <div className="branding-row">
-              <div>
-                <h1>MindfulGram</h1>
-                <p>Redesigned for healthy, controlled content consumption.</p>
-              </div>
-
-              {activeScreen === 'feed' && (
+          {isFeedExperience ? (
+            <div className="app-top-branding instagram-topbar">
+              <div className="ig-header-row">
                 <button
                   type="button"
-                  className={`messages-button ${showMessages ? 'active' : ''}`}
-                  onClick={() => setShowMessages((previous) => !previous)}
-                  aria-label={showMessages ? 'Close messages panel' : 'Open messages panel'}
+                  className={`messages-button ${activeTab === 'search' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('search')}
+                  aria-label="Open search"
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path
-                      d="M20 3H4C2.9 3 2 3.9 2 5v16l4-3h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 13H6l-2 1.5V5h16v11zM7 8h10v2H7zm0 3h7v2H7z"
+                      d="M10 2a8 8 0 105.29 14l4.35 4.35a1 1 0 001.41-1.41l-4.35-4.35A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"
                       fill="currentColor"
                     />
                   </svg>
                 </button>
-              )}
+
+                <h1>Instagram</h1>
+
+                <button
+                  type="button"
+                  className={`messages-button ${activeTab === 'messages' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('messages')}
+                  aria-label="Open messages"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M22 3L2.8 10.3a1 1 0 00.08 1.89l5.57 1.85 1.86 5.57a1 1 0 001.88.08L22 3zm-10.7 10.7l-1.13 3.4-1.15-3.45 8.2-8.2-5.92 8.25z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="app-top-branding">
+              <h1>MindfulGram</h1>
+              <p>Redesigned for healthy, controlled content consumption.</p>
+            </div>
+          )}
 
           {activeScreen === 'categories' ? (
             <CategorySelection
@@ -96,23 +176,17 @@ function App() {
               onContinue={handleStartFeed}
             />
           ) : (
-            <>
-              <ModeToggleBar modes={modes} onToggleMode={handleModeToggle} />
+            <div className="screen-body">
               <div className="feed-stack">
-                <Feed
-                  posts={postsData}
-                  selectedCategories={selectedCategories}
-                  modes={modes}
-                  onBreakTrigger={() => setShowBreakModal(true)}
-                  onOpenWrapped={() => setShowWrappedModal(true)}
-                  onStatsUpdate={setWrappedStats}
-                />
-
-                {showMessages && <MessagesPanel onBack={() => setShowMessages(false)} />}
+                {renderFeedTab()}
               </div>
-            </>
+            </div>
           )}
         </div>
+
+        {isFeedExperience && (
+          <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        )}
       </div>
 
       {showBreakModal && (

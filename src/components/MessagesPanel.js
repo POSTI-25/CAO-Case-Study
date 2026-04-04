@@ -36,23 +36,25 @@ const DUMMY_FRIENDS = [
   },
 ];
 
-function MessagesPanel({ onBack }) {
+function MessagesPanel({ onBack, showBackButton = false }) {
   return (
     <section className="messages-panel" aria-label="Messages panel">
       <header className="messages-header">
-        <button
-          type="button"
-          className="icon-circle-button"
-          onClick={onBack}
-          aria-label="Back to feed"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M14.7 6.3a1 1 0 010 1.4L11.41 11H20a1 1 0 110 2h-8.59l3.29 3.3a1 1 0 01-1.41 1.4l-5-5a1 1 0 010-1.4l5-5a1 1 0 011.41 0z"
-              fill="currentColor"
-            />
-          </svg>
-        </button>
+        {showBackButton && (
+          <button
+            type="button"
+            className="icon-circle-button"
+            onClick={onBack}
+            aria-label="Back to feed"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M14.7 6.3a1 1 0 010 1.4L11.41 11H20a1 1 0 110 2h-8.59l3.29 3.3a1 1 0 01-1.41 1.4l-5-5a1 1 0 010-1.4l5-5a1 1 0 011.41 0z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        )}
         <div>
           <h2>Messages</h2>
           <p>Recent chats</p>
