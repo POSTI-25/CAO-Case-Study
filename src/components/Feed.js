@@ -23,15 +23,18 @@ const formatSessionTime = (totalSeconds) => {
 
 function Feed({
   posts,
+  sessionSeconds,
+  viewCounts,
+  initialSeenPostIds,
   selectedCategories,
   modes,
+  onPostViewed,
   onBreakTrigger,
   onOpenWrapped,
   onStatsUpdate,
 }) {
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_POSTS);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [secondsSpent, setSecondsSpent] = useState(0);
   const [seenPostIds, setSeenPostIds] = useState([]);
   const [slowdownActive, setSlowdownActive] = useState(false);
   const [breakPromptShown, setBreakPromptShown] = useState(false);
@@ -126,12 +129,22 @@ function Feed({
   }, [filteredPosts]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSecondsSpent((previous) => previous + 1);
-    }, 1000);
+    setSeenPostIds((previous) => {
+      if (!initialSeenPostIds || initialSeenPostIds.length === 0) {
+        return previous;
+      }
 
-    return () => clearInterval(timer);
-  }, []);
+      const merged = [...previous];
+
+      initialSeenPostIds.forEach((postId) => {
+        if (!merged.includes(postId)) {
+          merged.push(postId);
+        }
+      });
+
+      return merged.length === previous.length ? previous : merged;
+    });
+  }, [initialSeenPostIds]);
 
   useEffect(() => {
     if (seenPostIds.length >= 4) {
@@ -140,24 +153,24 @@ function Feed({
   }, [seenPostIds.length]);
 
   useEffect(() => {
-    if (!breakPromptShown && (seenPostIds.length >= 10 || secondsSpent >= 30)) {
+    if (!breakPromptShown && (seenPostIds.length >= 10 || sessionSeconds >= 30)) {
       setBreakPromptShown(true);
       onBreakTrigger();
     }
-  }, [breakPromptShown, seenPostIds.length, secondsSpent, onBreakTrigger]);
+  }, [breakPromptShown, seenPostIds.length, sessionSeconds, onBreakTrigger]);
 
   useEffect(() => {
     onStatsUpdate({
       postsViewed: seenPostIds.length,
-      timeSpent: secondsSpent,
-      timeSpentFormatted: formatSessionTime(secondsSpent),
+      timeSpent: sessionSeconds,
+      timeSpentFormatted: formatSessionTime(sessionSeconds),
       mostViewedCategory,
       mostInteractedFriend,
     });
   }, [
     onStatsUpdate,
     seenPostIds.length,
-    secondsSpent,
+    sessionSeconds,
     mostViewedCategory,
     mostInteractedFriend,
   ]);
@@ -181,13 +194,19 @@ function Feed({
           }
 
           setSeenPostIds((previous) =>
-            previous.includes(postId) ? previous : [...previous, postId]
+            previous.includes(postId)
+              ? previous
+              : (() => {
+                  onPostViewed(postId);
+
+                  return [...previous, postId];
+                })()
           );
         });
       },
       {
         root: rootNode,
-        threshold: 0.6,
+        threshold: 0.45,
       }
     );
 
@@ -198,7 +217,7 @@ function Feed({
     });
 
     return () => observer.disconnect();
-  }, [visiblePosts]);
+  }, [visiblePosts, onPostViewed]);
 
   const registerInteraction = (username) => {
     setInteractionByUser((previous) => ({
@@ -246,7 +265,7 @@ function Feed({
           <span> posts viewed</span>
         </div>
         <div className="timer-block" aria-live="polite">
-          <strong>{formatSessionTime(secondsSpent)}</strong>
+          <strong>{formatSessionTime(sessionSeconds)}</strong>
           <span> session time</span>
         </div>
         <button type="button" className="wrapped-button" onClick={onOpenWrapped}>
@@ -285,6 +304,7 @@ function Feed({
             >
               <Post
                 post={post}
+                viewCount={viewCounts?.[post.id] ?? post.views}
                 modes={modes}
                 ghostMode={modes.ghostMode}
                 slowdownActive={slowdownActive}

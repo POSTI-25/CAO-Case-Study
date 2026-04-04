@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 
-function ReelsView({ posts }) {
+function ReelsView({ posts, onPostViewed }) {
   const reelsRef = useRef(null);
   const videoRefs = useRef({});
+  const seenReelIdsRef = useRef(new Set());
 
   const reelPosts = useMemo(() => posts, [posts]);
 
@@ -18,6 +19,16 @@ function ReelsView({ posts }) {
       (entries) => {
         entries.forEach((entry) => {
           const postId = Number(entry.target.getAttribute('data-post-id'));
+
+          if (
+            entry.isIntersecting &&
+            entry.intersectionRatio > 0.65 &&
+            !seenReelIdsRef.current.has(postId)
+          ) {
+            seenReelIdsRef.current.add(postId);
+            onPostViewed(postId);
+          }
+
           const videoNode = currentVideoRefs[postId];
 
           if (!videoNode) {
@@ -50,7 +61,7 @@ function ReelsView({ posts }) {
         videoNode?.pause();
       });
     };
-  }, [reelPosts]);
+  }, [reelPosts, onPostViewed]);
 
   return (
     <section className="reels-shell" aria-label="Reels feed">

@@ -1,5 +1,5 @@
 import './App.css';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import CategorySelection from './components/CategorySelection';
 import Feed from './components/Feed';
 import ModeToggleBar from './components/ModeToggleBar';
@@ -21,10 +21,19 @@ const shufflePosts = (posts) => {
   return nextPosts;
 };
 
+const createBaseViewCounts = (posts) =>
+  posts.reduce((accumulator, post) => {
+    accumulator[post.id] = post.views;
+    return accumulator;
+  }, {});
+
 function App() {
   const [activeScreen, setActiveScreen] = useState('categories');
   const [activeTab, setActiveTab] = useState('home');
   const [sessionPosts, setSessionPosts] = useState([]);
+  const [sessionSeconds, setSessionSeconds] = useState(0);
+  const [viewedPostIds, setViewedPostIds] = useState([]);
+  const [globalViewCounts, setGlobalViewCounts] = useState(() => createBaseViewCounts(postsData));
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [showBreakModal, setShowBreakModal] = useState(false);
   const [showWrappedModal, setShowWrappedModal] = useState(false);
@@ -56,8 +65,26 @@ function App() {
       setActiveScreen('feed');
       setActiveTab('home');
       setSessionPosts(shufflePosts(postsData));
+      setSessionSeconds(0);
+      setViewedPostIds([]);
+      setGlobalViewCounts(createBaseViewCounts(postsData));
     }
   };
+
+  const handlePostViewed = useCallback((postId) => {
+    setViewedPostIds((previous) => {
+      if (previous.includes(postId)) {
+        return previous;
+      }
+
+      setGlobalViewCounts((previousCounts) => ({
+        ...previousCounts,
+        [postId]: (previousCounts[postId] ?? 0) + 1,
+      }));
+
+      return [...previous, postId];
+    });
+  }, []);
 
   const handleModeToggle = (modeName) => {
     setModes((prevModes) => ({
@@ -70,7 +97,10 @@ function App() {
     setShowBreakModal(false);
     setActiveScreen('categories');
     setActiveTab('home');
+    setSessionSeconds(0);
     setSelectedCategories([]);
+    setViewedPostIds([]);
+    setGlobalViewCounts(createBaseViewCounts(postsData));
   };
 
   const postPool = useMemo(
@@ -80,9 +110,21 @@ function App() {
 
   const isFeedExperience = activeScreen === 'feed';
 
+  useEffect(() => {
+    if (!isFeedExperience) {
+      return undefined;
+    }
+
+    const timer = setInterval(() => {
+      setSessionSeconds((previous) => previous + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isFeedExperience]);
+
   const renderFeedTab = () => {
     if (activeTab === 'reels') {
-      return <ReelsView posts={postPool} />;
+      return <ReelsView posts={postPool} onPostViewed={handlePostViewed} />;
     }
 
     if (activeTab === 'messages') {
@@ -112,8 +154,12 @@ function App() {
         <ModeToggleBar modes={modes} onToggleMode={handleModeToggle} />
         <Feed
           posts={postPool}
+          sessionSeconds={sessionSeconds}
+          viewCounts={globalViewCounts}
+          initialSeenPostIds={viewedPostIds}
           selectedCategories={selectedCategories}
           modes={modes}
+          onPostViewed={handlePostViewed}
           onBreakTrigger={() => setShowBreakModal(true)}
           onOpenWrapped={() => setShowWrappedModal(true)}
           onStatsUpdate={setWrappedStats}

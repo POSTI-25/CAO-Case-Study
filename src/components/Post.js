@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 
 const MIN_COMMENT_LENGTH = 8;
 
-function Post({ post, modes, ghostMode, slowdownActive, onInteraction }) {
+function Post({ post, viewCount, modes, ghostMode, slowdownActive, onInteraction }) {
   const [mediaFailed, setMediaFailed] = useState(false);
   const [liked, setLiked] = useState(false);
   const [commentInput, setCommentInput] = useState('');
@@ -147,7 +147,7 @@ function Post({ post, modes, ghostMode, slowdownActive, onInteraction }) {
 
       {!ghostMode && (
         <p className="post-meta">
-          <strong>{likeCount} likes</strong> • {commentCount} comments • {post.views} views
+          <strong>{likeCount} likes</strong> • {commentCount} comments • {viewCount} views
         </p>
       )}
 
