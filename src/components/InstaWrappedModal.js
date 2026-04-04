@@ -20,7 +20,7 @@ function InstaWrappedModal({ stats, onClose }) {
           </div>
           <div className="wrapped-item">
             <span>Time on feed</span>
-            <strong>{stats.timeSpent}s</strong>
+            <strong>{stats.timeSpentFormatted || '00:00:00'}</strong>
           </div>
         </div>
 

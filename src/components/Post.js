@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 
 const MIN_COMMENT_LENGTH = 8;
 
-function Post({ post, ghostMode, slowdownActive, onInteraction }) {
+function Post({ post, modes, ghostMode, slowdownActive, onInteraction }) {
   const [mediaFailed, setMediaFailed] = useState(false);
   const [liked, setLiked] = useState(false);
   const [commentInput, setCommentInput] = useState('');
@@ -20,6 +20,7 @@ function Post({ post, ghostMode, slowdownActive, onInteraction }) {
     false;
 
   const submitDisabled = commentInput.trim().length < MIN_COMMENT_LENGTH;
+  const profileInitial = post.username.charAt(0).toUpperCase();
 
   const handleLikeClick = () => {
     setLiked((previous) => {
@@ -43,13 +44,29 @@ function Post({ post, ghostMode, slowdownActive, onInteraction }) {
   };
 
   return (
-    <article className={`post-card ${slowdownActive ? 'slowdown' : ''}`}>
+    <article
+      className={`post-card ${slowdownActive ? 'slowdown' : ''} ${
+        ghostMode ? 'ghost-card' : ''
+      } ${modes?.closeCircleMode ? 'close-circle-card' : ''} ${
+        modes?.parentalMode ? 'parental-card' : ''
+      }`}
+    >
       <header className="post-header">
-        <div className="avatar-dot" aria-hidden="true" />
+        <div className="avatar-ring" aria-hidden="true">
+          <div className="avatar-dot">{profileInitial}</div>
+        </div>
         <div>
           <h3>{post.username}</h3>
-          <small>{post.category}</small>
+          <small>{post.category} • 5m</small>
         </div>
+        <button type="button" className="more-button" aria-label="More options">
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="icon-svg">
+            <path
+              d="M6 10a2 2 0 100 4 2 2 0 000-4zm6 0a2 2 0 100 4 2 2 0 000-4zm6 0a2 2 0 100 4 2 2 0 000-4z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
         {post.isCloseFriend && <span className="close-friend-pill">Close Friend</span>}
       </header>
 
@@ -78,35 +95,66 @@ function Post({ post, ghostMode, slowdownActive, onInteraction }) {
 
       <p className="post-caption">{post.caption}</p>
 
-      <div className="post-actions">
-        <button type="button" className="icon-button" onClick={handleLikeClick}>
+      <div className="post-actions-row">
+        <div className="post-actions">
+          <button
+            type="button"
+            className={`icon-button icon-only ${liked ? 'liked' : ''}`}
+            onClick={handleLikeClick}
+            aria-label="Like post"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="icon-svg">
+              <path
+                d="M12 20.5l-1.3-1.18C5.4 14.73 2 11.64 2 7.99 2 5.07 4.23 3 7 3c1.57 0 3.08.73 4 1.88A5.17 5.17 0 0115 3c2.77 0 5 2.07 5 4.99 0 3.65-3.4 6.74-8.7 11.33L12 20.5z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className="icon-button icon-only"
+            aria-label="Comment on post"
+            onClick={() => commentInputRef.current?.focus()}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="icon-svg">
+              <path
+                d="M4 4h16a1 1 0 011 1v10a1 1 0 01-1 1H8l-4 4V5a1 1 0 011-1zm2 3v2h12V7H6zm0 4v2h8v-2H6z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+
+          <button type="button" className="icon-button icon-only" aria-label="Share post">
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="icon-svg">
+              <path
+                d="M22 3L2.8 10.3a1 1 0 00.08 1.89l5.57 1.85 1.86 5.57a1 1 0 001.88.08L22 3zm-10.7 10.7l-1.13 3.4-1.15-3.45 8.2-8.2-5.92 8.25z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <button type="button" className="icon-button icon-only" aria-label="Save post">
           <svg viewBox="0 0 24 24" aria-hidden="true" className="icon-svg">
             <path
-              d="M12 20.5l-1.3-1.18C5.4 14.73 2 11.64 2 7.99 2 5.07 4.23 3 7 3c1.57 0 3.08.73 4 1.88A5.17 5.17 0 0115 3c2.77 0 5 2.07 5 4.99 0 3.65-3.4 6.74-8.7 11.33L12 20.5z"
+              d="M7 3h10a2 2 0 012 2v16l-7-4-7 4V5a2 2 0 012-2z"
               fill="currentColor"
             />
           </svg>
-          <span>{liked ? 'Liked' : 'Like'}</span>
-        </button>
-        <button
-          type="button"
-          className="icon-button"
-          onClick={() => commentInputRef.current?.focus()}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="icon-svg">
-            <path
-              d="M4 4h16a1 1 0 011 1v10a1 1 0 01-1 1H8l-4 4V5a1 1 0 011-1zm2 3v2h12V7H6zm0 4v2h8v-2H6z"
-              fill="currentColor"
-            />
-          </svg>
-          <span>Comment</span>
         </button>
       </div>
 
       {!ghostMode && (
         <p className="post-meta">
-          {likeCount} likes | {commentCount} comments | {post.views} views
+          <strong>{likeCount} likes</strong> • {commentCount} comments • {post.views} views
         </p>
+      )}
+
+      {ghostMode && <p className="mode-caption">Ghost Mode Active: public counters hidden</p>}
+      {modes?.parentalMode && <p className="mode-caption">Parental Mode Active: safer categories only</p>}
+      {modes?.closeCircleMode && (
+        <p className="mode-caption">Close Circle Mode Active: close-friend content prioritized</p>
       )}
 
       <form className="comment-form" onSubmit={handleCommentSubmit}>

@@ -1,4 +1,5 @@
 function PopupModal({
+  variant = 'default',
   title,
   message,
   primaryLabel,
@@ -8,7 +9,7 @@ function PopupModal({
 }) {
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true">
-      <div className="modal-card">
+      <div className={`modal-card ${variant === 'break' ? 'break-modal' : ''}`}>
         <h2>{title}</h2>
         <p>{message}</p>
 

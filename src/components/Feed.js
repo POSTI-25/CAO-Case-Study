@@ -5,6 +5,22 @@ import { SAFE_CATEGORIES } from '../data/postsData';
 const INITIAL_VISIBLE_POSTS = 5;
 const LOAD_BATCH_SIZE = 2;
 
+const MODE_LABELS = {
+  ghostMode: 'Ghost Mode Active',
+  parentalMode: 'Parental Mode Active',
+  closeCircleMode: 'Close Circle Mode Active',
+  moonMode: 'Moon Mode Active',
+};
+
+const formatSessionTime = (totalSeconds) => {
+  const safeSeconds = Math.max(0, totalSeconds);
+  const hours = Math.floor(safeSeconds / 3600);
+  const minutes = Math.floor((safeSeconds % 3600) / 60);
+  const seconds = safeSeconds % 60;
+
+  return [hours, minutes, seconds].map((part) => String(part).padStart(2, '0')).join(':');
+};
+
 function Feed({
   posts,
   selectedCategories,
@@ -50,6 +66,14 @@ function Feed({
   const visiblePosts = useMemo(
     () => filteredPosts.slice(0, visibleCount),
     [filteredPosts, visibleCount]
+  );
+
+  const activeModeLabels = useMemo(
+    () =>
+      Object.keys(modes)
+        .filter((modeName) => modes[modeName])
+        .map((modeName) => MODE_LABELS[modeName]),
+    [modes]
   );
 
   const seenPosts = useMemo(
@@ -126,6 +150,7 @@ function Feed({
     onStatsUpdate({
       postsViewed: seenPostIds.length,
       timeSpent: secondsSpent,
+      timeSpentFormatted: formatSessionTime(secondsSpent),
       mostViewedCategory,
       mostInteractedFriend,
     });
@@ -197,7 +222,7 @@ function Feed({
     }
 
     setIsLoadingMore(true);
-    const delay = slowdownActive ? 950 : 250;
+    const delay = slowdownActive ? 920 : 560;
 
     setTimeout(() => {
       setVisibleCount((currentVisible) =>
@@ -208,19 +233,37 @@ function Feed({
   };
 
   return (
-    <section className="feed-shell">
+    <section
+      className={`feed-shell ${
+        modes.ghostMode ? 'mode-ghost-enabled' : ''
+      } ${modes.parentalMode ? 'mode-parental-enabled' : ''} ${
+        modes.closeCircleMode ? 'mode-close-enabled' : ''
+      } ${modes.moonMode ? 'mode-moon-enabled' : ''}`}
+    >
       <div className="feed-summary">
         <div>
           <strong>{seenPostIds.length}</strong>
           <span> posts viewed</span>
         </div>
-        <div>
-          <strong>{secondsSpent}s</strong>
+        <div className="timer-block" aria-live="polite">
+          <strong>{formatSessionTime(secondsSpent)}</strong>
           <span> session time</span>
         </div>
         <button type="button" className="wrapped-button" onClick={onOpenWrapped}>
           Insta Wrapped
         </button>
+      </div>
+
+      <div className="mode-indicator-strip">
+        {activeModeLabels.length === 0 ? (
+          <span className="mode-indicator quiet">Standard Feed</span>
+        ) : (
+          activeModeLabels.map((modeLabel) => (
+            <span key={modeLabel} className="mode-indicator">
+              {modeLabel}
+            </span>
+          ))
+        )}
       </div>
 
       <div className="feed-list" ref={scrollRef} onScroll={handleScroll}>
@@ -229,10 +272,12 @@ function Feed({
             No posts available for your current filter and mode setup.
           </div>
         ) : (
-          visiblePosts.map((post) => (
+          visiblePosts.map((post, index) => (
             <div
               key={post.id}
-              className={`post-shell ${slowdownActive ? 'wide-gap' : ''}`}
+              className={`post-shell ${
+                slowdownActive && index >= 2 ? 'wide-gap' : ''
+              } ${slowdownActive && index >= 4 ? 'extra-gap' : ''}`}
               data-post-id={post.id}
               ref={(element) => {
                 postRefs.current[post.id] = element;
@@ -240,6 +285,7 @@ function Feed({
             >
               <Post
                 post={post}
+                modes={modes}
                 ghostMode={modes.ghostMode}
                 slowdownActive={slowdownActive}
                 onInteraction={registerInteraction}
@@ -248,7 +294,12 @@ function Feed({
           ))
         )}
 
-        {isLoadingMore && <p className="loading-more">Loading more mindfully...</p>}
+        {isLoadingMore && (
+          <p className="loading-more">
+            <span className="loading-dot" />
+            Loading the next post batch mindfully...
+          </p>
+        )}
       </div>
     </section>
   );

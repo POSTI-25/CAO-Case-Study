@@ -11,12 +11,12 @@ export const SAFE_CATEGORIES = ['Education', 'Technology', 'Fitness'];
 // Add image files in: public/media/images/
 // Example usage path: /media/images/img1.jpg
 // Add video files in: public/media/videos/
-// Example usage path: /media/videos/video1.mp4
+// Example usage path: /media/videos/vid1.mp4
 export const postsData = [
   {
     id: 1,
     username: 'mindful_amy',
-    media: { type: 'image', src: '/media/images/img1.jpg' },
+    media: { type: 'video', src: '/media/videos/vid2.mp4' },
     caption: 'Study sprint with deep focus and no doom scrolling.',
     category: 'Education',
     isCloseFriend: true,
@@ -27,7 +27,7 @@ export const postsData = [
   {
     id: 2,
     username: 'fit_rahul',
-    media: { type: 'video', src: '/media/videos/video1.mp4' },
+    media: { type: 'image', src: '/media/images/img4.jpg' },
     caption: '15-minute mobility reset to reduce screen stress.',
     category: 'Fitness',
     isCloseFriend: false,
@@ -38,7 +38,7 @@ export const postsData = [
   {
     id: 3,
     username: 'codewithnina',
-    media: { type: 'image', src: '/media/images/img2.jpg' },
+    media: { type: 'image', src: '/media/images/img1.jpg' },
     caption: 'Building tiny habits: code, break, breathe, repeat.',
     category: 'Technology',
     isCloseFriend: true,
@@ -49,7 +49,7 @@ export const postsData = [
   {
     id: 4,
     username: 'trail_hopper',
-    media: { type: 'image', src: '/media/images/img3.jpg' },
+    media: { type: 'video', src: '/media/videos/vid1.mp4' },
     caption: 'Quiet mountain walk to reset the nervous system.',
     category: 'Travel',
     isCloseFriend: false,
@@ -60,7 +60,7 @@ export const postsData = [
   {
     id: 5,
     username: 'canvas_riya',
-    media: { type: 'video', src: '/media/videos/video2.mp4' },
+    media: { type: 'image', src: '/media/images/img6.jpg' },
     caption: 'Art therapy: palette knife textures for calm evenings.',
     category: 'Art',
     isCloseFriend: true,
@@ -71,7 +71,7 @@ export const postsData = [
   {
     id: 6,
     username: 'learn_daily',
-    media: { type: 'image', src: '/media/images/img4.jpg' },
+    media: { type: 'image', src: '/media/images/img2.jpg' },
     caption: 'Micro-learning tip: one concept, one note, one review.',
     category: 'Education',
     isCloseFriend: false,
@@ -82,7 +82,7 @@ export const postsData = [
   {
     id: 7,
     username: 'luna_runner',
-    media: { type: 'image', src: '/media/images/img5.jpg' },
+    media: { type: 'video', src: '/media/videos/vid3.mp4' },
     caption: 'Easy run day. Progress is consistency, not intensity.',
     category: 'Fitness',
     isCloseFriend: true,
@@ -93,7 +93,7 @@ export const postsData = [
   {
     id: 8,
     username: 'byte_garden',
-    media: { type: 'video', src: '/media/videos/video3.mp4' },
+    media: { type: 'image', src: '/media/images/img5.jpg' },
     caption: 'Digital detox dashboard built in pure React.',
     category: 'Technology',
     isCloseFriend: false,
@@ -104,7 +104,7 @@ export const postsData = [
   {
     id: 9,
     username: 'postcard_sia',
-    media: { type: 'image', src: '/media/images/img6.jpg' },
+    media: { type: 'video', src: '/media/videos/vid1.mp4' },
     caption: 'Slow travel weekend and handwritten journal prompts.',
     category: 'Travel',
     isCloseFriend: true,
@@ -115,7 +115,7 @@ export const postsData = [
   {
     id: 10,
     username: 'sketch_n_still',
-    media: { type: 'image', src: '/media/images/img7.jpg' },
+    media: { type: 'image', src: '/media/images/img3.jpg' },
     caption: 'Color study challenge: 20 minutes of daily sketching.',
     category: 'Art',
     isCloseFriend: false,
@@ -126,7 +126,7 @@ export const postsData = [
   {
     id: 11,
     username: 'studywith_dev',
-    media: { type: 'video', src: '/media/videos/video4.mp4' },
+    media: { type: 'image', src: '/media/images/img2.jpg' },
     caption: 'Pomodoro plus mindful breathing between sessions.',
     category: 'Education',
     isCloseFriend: true,
@@ -137,7 +137,7 @@ export const postsData = [
   {
     id: 12,
     username: 'pilates_noor',
-    media: { type: 'image', src: '/media/images/img8.jpg' },
+    media: { type: 'video', src: '/media/videos/vid2.mp4' },
     caption: 'Desk posture check: shoulders down, neck relaxed.',
     category: 'Fitness',
     isCloseFriend: false,
