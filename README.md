@@ -1,15 +1,15 @@
-# 🌿 MindfulGram
+# MindfulGram
 
 ### A System-Efficient, Mental Health–First Social Media Platform
 
 ---
 
-## 🚀 Overview
+## Overview
 
 **MindfulGram** is a reimagined version of Instagram designed around two fundamental principles:
 
-* 🧠 **Mental Health Well-being**
-* ⚙️ **Computer Architecture Efficiency**
+* **Mental Health Well-being**
+* **Computer Architecture Efficiency**
 
 Modern social media platforms optimize for **engagement maximization**, leading to:
 
@@ -22,7 +22,7 @@ MindfulGram introduces a paradigm shift toward **Controlled Exposure**—a syste
 
 ---
 
-## ❗ The Problem
+## The Problem
 
 Traditional social media platforms:
 
@@ -39,7 +39,7 @@ This creates a **dual problem**:
 
 ---
 
-## 💡 Our Solution: Controlled Exposure
+## Our Solution: Controlled Exposure
 
 MindfulGram introduces **Controlled Exposure**, where:
 
@@ -49,9 +49,9 @@ MindfulGram introduces **Controlled Exposure**, where:
 
 ---
 
-## 🔑 Core Features
+## Core Features
 
-### 1. 🎯 Interest-Based Selection
+### 1. Interest-Based Selection
 
 * Users choose categories (Tech, Art, etc.) *before* feed generation
 * Reduces unnecessary data fetching
@@ -65,7 +65,7 @@ MindfulGram introduces **Controlled Exposure**, where:
 
 ---
 
-### 2. ⏱️ Scroll Behavior Detection & Smart Interrupt
+### 2. Scroll Behavior Detection & Smart Interrupt
 
 * Tracks scrolling duration and interaction intensity
 * Triggers a **break suggestion popup** after threshold
@@ -78,7 +78,7 @@ MindfulGram introduces **Controlled Exposure**, where:
 
 ---
 
-### 3. 🐢 Feed Slowdown Mode
+### 3. Feed Slowdown Mode
 
 * Introduces **intentional delays and spacing** in feed loading
 * Breaks dopamine-driven rapid scrolling patterns
@@ -91,7 +91,7 @@ MindfulGram introduces **Controlled Exposure**, where:
 
 ---
 
-### 4. 👥 Close Circle & 👻 Ghost Mode
+### 4. Close Circle & Ghost Mode
 
 * Restricts feed to **trusted connections only**
 * Hides likes, views, and engagement metrics
@@ -105,7 +105,7 @@ MindfulGram introduces **Controlled Exposure**, where:
 
 ---
 
-### 5. 🌙 Moon Mode (Night Optimization)
+### 5. Moon Mode (Night Optimization)
 
 * Adaptive UI for nighttime usage
 * Disables autoplay
@@ -119,7 +119,7 @@ MindfulGram introduces **Controlled Exposure**, where:
 
 ---
 
-### 6. ✍️ Comment Friction
+### 6. Comment Friction
 
 * Enforces **minimum character limits** before posting
 * Encourages thoughtful interactions
@@ -132,7 +132,7 @@ MindfulGram introduces **Controlled Exposure**, where:
 
 ---
 
-## ⚙️ System Architecture Impact
+## System Architecture Impact
 
 MindfulGram is not just a UX redesign—it is a **system-level optimization strategy**.
 
@@ -146,7 +146,7 @@ MindfulGram is not just a UX redesign—it is a **system-level optimization stra
 
 ---
 
-## 🔄 System Workflow (Optimized Pipeline)
+## System Workflow (Optimized Pipeline)
 
 MindfulGram follows a **filter-first architecture**:
 
@@ -166,7 +166,7 @@ Smart Interrupt / Slowdown Trigger
 
 ### Key Idea:
 
-👉 **Filtering happens at the entry point**, not after loading
+**Filtering happens at the entry point**, not after loading
 
 This ensures:
 
@@ -176,7 +176,7 @@ This ensures:
 
 ---
 
-## 🧠 Why This Matters
+## Why This Matters
 
 MindfulGram demonstrates that:
 
@@ -190,7 +190,7 @@ It bridges:
 
 ---
 
-## 🛠️ Future Scope
+## Future Scope
 
 * AI-based adaptive feed control
 * Personalized mental health insights
