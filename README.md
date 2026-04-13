@@ -199,7 +199,7 @@ It bridges:
 
 ---
 
-## 📌 Conclusion
+## Conclusion
 
 MindfulGram is more than a redesign—
 it is a **new philosophy for social media systems**:
